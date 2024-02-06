@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,31 +21,44 @@ const db = getFirestore(app);
 const cafeList = document.querySelector('#cafe-list');
 const form = document.querySelector('#add-cafe-form');
 
-function renderCafe(doc) {
+function renderCafe(docc) {
     let li = document.createElement('li');
     let name = document.createElement('span');
     let city = document.createElement('span');
+    let cross = document.createElement('div');
 
-    li.setAttribute('data-id', doc.id);
-    name.textContent = doc.data().name;
-    city.textContent = doc.data().city;
+    li.setAttribute('data-id', docc.id);
+    name.textContent = docc.data().name;
+    city.textContent = docc.data().city;
+    cross.textContent = 'x';
 
     li.appendChild(name);
     li.appendChild(city);
+    li.appendChild(cross);
 
     cafeList.appendChild(li);
+
+    // deleting data
+    cross.addEventListener('click', async (e) => {
+        // e.stopPropagation();
+        let id = e.target.parentElement.getAttribute('data-id');
+        await deleteDoc(doc(db, "cafes", id));
+        // db.collection("cities").doc(id).delete();
+
+    })
 }
 const conn = collection(db, "cafes");
 const querySnapshot = await getDocs(conn);
+
 // get data from firestore
-querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data().name}`);
-    console.log(doc.data());
-    renderCafe(doc);
+querySnapshot.forEach((docc) => {
+    console.log(`${docc.id} => ${docc.data().name}`);
+    console.log(docc.data());
+    renderCafe(docc);
 });
 
 
-// save data from firestore
+// save data to firestore
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const docRef = await addDoc(conn, {
