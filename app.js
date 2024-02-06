@@ -44,7 +44,8 @@ querySnapshot.forEach((doc) => {
     renderCafe(doc);
 });
 
-// save data to firestore
+
+// save data from firestore
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const docRef = await addDoc(conn, {
