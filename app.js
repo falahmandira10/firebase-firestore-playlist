@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, addDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -19,6 +19,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const cafeList = document.querySelector('#cafe-list');
+const form = document.querySelector('#add-cafe-form');
+
 function renderCafe(doc) {
     let li = document.createElement('li');
     let name = document.createElement('span');
@@ -33,8 +35,9 @@ function renderCafe(doc) {
 
     cafeList.appendChild(li);
 }
-
-const querySnapshot = await getDocs(collection(db, "cafes"));
+const conn = collection(db, "cafes");
+const querySnapshot = await getDocs(conn);
+// get data from firestore
 querySnapshot.forEach((doc) => {
     console.log(`${doc.id} => ${doc.data().name}`);
     console.log(doc.data());
@@ -48,3 +51,14 @@ querySnapshot.forEach((doc) => {
 //     })
 // })
 
+// save data from firestore
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const docRef = await addDoc(conn, {
+        name: form.name.value,
+        city: form.city.value
+    });
+    form.name.value = "";
+    form.city.value = "";
+})
