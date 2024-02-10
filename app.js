@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, orderBy, limit, onSnapshot  } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -45,11 +45,45 @@ function renderCafe(docc) {
         await deleteDoc(doc(db, "cafes", id));
         // db.collection("cities").doc(id).delete();
         
-    })
+    });
 }
 
 
 const conn = collection(db, "cafes");
+
+// add data to firestore
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const docRef = await addDoc(conn, {
+        name: form.name.value,
+        city: form.city.value
+    });
+    form.name.value = "";
+    form.city.value = "";
+});
+
+
+// real-time listener
+const quer = query(conn, orderBy("city"));
+const unsubscribe = onSnapshot(quer, (snapshot) => {
+    snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+            // console.log("New city: ", change.doc.data());
+            renderCafe(change.doc);
+        }
+        // edit manually from firestore (unsucces)
+        // if (change.type === "modified") {
+        //     // console.log("Modified city: ", change.doc.data());
+        //     renderCafe(change.doc);
+        // }
+        else if (change.type === "removed") {
+            // console.log("Removed city: ", change.doc.data());
+            let li = cafeList.querySelector('[data-id=' + change.doc.id + ']');
+            cafeList.removeChild(li);
+        }
+      });
+});
+
 // const querySnapshot = await getDocs(conn);
 
 // // get data from firestore
@@ -87,27 +121,15 @@ const conn = collection(db, "cafes");
 //     renderCafe(docc);
 // });
 
-// where, order by, and limit
-// sometimes need to add an index in firebase console
-const quer = query(conn, where("city", "==", "bogor"), orderBy("name"), limit(2));
-const querySnapshot = await getDocs(quer);
+// // where, order by, and limit
+// // sometimes need to add an index in firebase console
+// const quer = query(conn, where("city", "==", "bogor"), orderBy("name"), limit(2));
+// const querySnapshot = await getDocs(quer);
 
 
-// get data after order by and limit from firestore
-querySnapshot.forEach((docc) => {
-    console.log(`${docc.id} => ${docc.data().name}`);
-    console.log(docc.data());
-    renderCafe(docc);
-});
-
-
-// save data to firestore
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const docRef = await addDoc(conn, {
-        name: form.name.value,
-        city: form.city.value
-    });
-    form.name.value = "";
-    form.city.value = "";
-})
+// // get data after order by and limit from firestore
+// querySnapshot.forEach((docc) => {
+//     console.log(`${docc.id} => ${docc.data().name}`);
+//     console.log(docc.data());
+//     renderCafe(docc);
+// });
