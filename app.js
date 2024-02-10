@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -48,7 +48,12 @@ function renderCafe(docc) {
     })
 }
 const conn = collection(db, "cafes");
-const querySnapshot = await getDocs(conn);
+// const querySnapshot = await getDocs(conn);
+
+// query 
+const quer = query(conn, where("city", "==", "lampung"))
+const querySnapshot = await getDocs(quer);
+
 
 // get data from firestore
 querySnapshot.forEach((docc) => {
