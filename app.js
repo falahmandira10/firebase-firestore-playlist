@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -44,18 +44,56 @@ function renderCafe(docc) {
         let id = e.target.parentElement.getAttribute('data-id');
         await deleteDoc(doc(db, "cafes", id));
         // db.collection("cities").doc(id).delete();
-
+        
     })
 }
+
+
 const conn = collection(db, "cafes");
 // const querySnapshot = await getDocs(conn);
 
-// query 
-const quer = query(conn, where("city", "==", "lampung"))
+// // get data from firestore
+// querySnapshot.forEach((docc) => {
+//     console.log(`${docc.id} => ${docc.data().name}`);
+//     console.log(docc.data());
+//     renderCafe(docc);
+// });
+
+
+
+// // query 
+// const quer = query(conn, where("city", "==", "lampung"));
+// const querySnapshot = await getDocs(quer);
+
+
+// // get data queries from firestore
+// querySnapshot.forEach((docc) => {
+//     console.log(`${docc.id} => ${docc.data().name}`);
+//     console.log(docc.data());
+//     renderCafe(docc);
+// });
+
+
+// // order by and limit
+// // order by -> ascending for default and capital letter will prioritize
+// const quer = query(conn, orderBy("name", "desc"), limit(2));
+// const querySnapshot = await getDocs(quer);
+
+
+// // get data after order by and limit from firestore
+// querySnapshot.forEach((docc) => {
+//     console.log(`${docc.id} => ${docc.data().name}`);
+//     console.log(docc.data());
+//     renderCafe(docc);
+// });
+
+// where, order by, and limit
+// sometimes need to add an index in firebase console
+const quer = query(conn, where("city", "==", "bogor"), orderBy("name"), limit(2));
 const querySnapshot = await getDocs(quer);
 
 
-// get data from firestore
+// get data after order by and limit from firestore
 querySnapshot.forEach((docc) => {
     console.log(`${docc.id} => ${docc.data().name}`);
     console.log(docc.data());
