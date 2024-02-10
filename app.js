@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, orderBy, limit, onSnapshot  } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+import { getFirestore, collection, getDocs, addDoc, doc, deleteDoc, query, where, orderBy, limit, onSnapshot, updateDoc} from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -62,6 +62,16 @@ form.addEventListener('submit', async (e) => {
     form.city.value = "";
 });
 
+// // update data (unfinished)
+// in console web, we can do -> doc.collection('cafes').doc('id').update({
+//     property: 'something'
+// })
+// const arabikaRef = query(conn, where('data-id', '==', '5qI5flLh5EsMn9napZGB'));
+
+// await updateDoc( arabikaRef, {
+//     'name': 'arabika coffeeshop'
+// });
+
 
 // real-time listener
 const quer = query(conn, orderBy("city"));
@@ -71,11 +81,6 @@ const unsubscribe = onSnapshot(quer, (snapshot) => {
             // console.log("New city: ", change.doc.data());
             renderCafe(change.doc);
         }
-        // edit manually from firestore (unsucces)
-        // if (change.type === "modified") {
-        //     // console.log("Modified city: ", change.doc.data());
-        //     renderCafe(change.doc);
-        // }
         else if (change.type === "removed") {
             // console.log("Removed city: ", change.doc.data());
             let li = cafeList.querySelector('[data-id=' + change.doc.id + ']');
